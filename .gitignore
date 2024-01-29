@@ -2,3 +2,4 @@ __pycache__/
 
 flask_session/
 credentials.json
+instance/
