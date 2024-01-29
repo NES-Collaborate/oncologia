@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% import "components/flash_messages.html" as flash %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<div class="m-3">
+  {{ flash.show() }}
+  <p class="text-center text-3xl">
+    Oncologia APP - Home
+  </p>
+</div>
+{% endblock %}
