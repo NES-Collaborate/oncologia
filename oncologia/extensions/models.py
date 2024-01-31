@@ -139,6 +139,34 @@ class TumosrGroup(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(nullable=False)
 
+class TypeTreatment(db.Model):
+    __tablename__ = "type_treatment"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    name: Mapped[str] 
+
+class Status(db.Model):
+    __tablename__ = "status"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    ghc_patient: Mapped[int] = mapped_column( ForeignKey("patient.ghc"))
+    type_status: Mapped[str] = mapped_column(nullable=False)
+    date_primary_treatment: Mapped[date]
+    type_treatment_id: Mapped[int] = mapped_column(ForeignKey('type_treatment.id'))
+    entry_team_id: Mapped[int] = mapped_column(ForeignKey('entry_team.id'))
+    complement: Mapped[str]
+    time_start_treatment: Mapped[int]
+    time_arrial_treatment: Mapped[int]
+    time_radiotherapy: Mapped[int]
+    date_death: Mapped[date]
+    place_death: Mapped[str]
+    definition_date: Mapped[date]
+    definition_date: Mapped[date]
+    note: Mapped[str]
+
+    type_treatment: Mapped['TypeTreatment'] = relationship("TypeTreatment", backref="statuses", foreign_keys=[type_treatment_id])
+    entry_team: Mapped['EntreyTeam'] = relationship("EntreyTeam", backref="statuses", foreign_keys=[entry_team_id])
+
 
 @app.cli.command("init-db")
 def init_db():
