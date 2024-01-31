@@ -1,13 +1,27 @@
 {% extends "base.html" %}
+
+<!-- Flash Messages -->
 {% import "components/flash_messages.html" as flash %}
 
+<!-- Title -->
 {% block title %}Home{% endblock %}
 
+<!-- Content -->
 {% block content %}
 <div class="m-3">
   {{ flash.show() }}
-  <p class="text-center text-3xl">
-    Oncologia APP - Home
-  </p>
+  <p class="text-center text-3xl">Oncologia APP - Home</p>
+
+  <div class="my-3">
+    {% for pedency in pendencies %}
+    <!-- TODO: Move this to a macro Component -->
+    <p>{{ pedency.id }}</p>
+    {% else %}
+    <div role="alert" class="alert alert-info">
+      <i data-lucide="info"></i>
+      <span>Nenhuma pendência no momento.</span>
+    </div>
+    {% endfor %}
+  </div>
 </div>
 {% endblock %}
