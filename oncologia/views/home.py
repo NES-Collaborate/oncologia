@@ -11,6 +11,8 @@ bp = Blueprint("home", __name__)
 @bp.route("/")
 @login_required
 def index():
-    pendencies = Pendency.query.filter(Pendency.due_date < datetime.now()).all()
+    pendencies = Pendency.query.filter(
+        Pendency.due_date < datetime.now(), Pendency.status == 1
+    ).all()
     context = {"pendencies": pendencies}
     return render_template("home/index.html", **context)

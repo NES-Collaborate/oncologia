@@ -44,17 +44,20 @@ class Pendency(db.Model):
     type_id: Mapped[int] = mapped_column(
         ForeignKey("pendency_type.id"), nullable=False
     )
-    user_id: Mapped[int] = mapped_column(ForeignKey("user.id"), nullable=False)
+    patient_id: Mapped[int] = mapped_column(
+        ForeignKey("user.id"), nullable=False
+    )
     due_date: Mapped[datetime] = mapped_column(nullable=False)
     description: Mapped[str] = mapped_column(nullable=False)
     status: Mapped[PendencyStatus] = mapped_column(nullable=False)
 
     # relationships
-    type: Mapped["PendencyType"] = relationship(
+    type: Mapped[PendencyType] = relationship(
         "PendencyType", backref="pendencies_type", foreign_keys=[type_id]
     )
-    user: Mapped["User"] = relationship(
-        "User", backref="pendencies_user", foreign_keys=[user_id]
+    # TODO: Create a relationship with "Patient" table instead
+    patient: Mapped["User"] = relationship(
+        "User", backref="pendencies_patient", foreign_keys=[patient_id]
     )
 
 
