@@ -1,0 +1,34 @@
+{
+  "[python]": {
+    "editor.defaultFormatter": "ms-python.black-formatter",
+    "diffEditor.ignoreTrimWhitespace": false,
+    "editor.formatOnSaveMode": "file",
+    "editor.formatOnType": true,
+    "editor.wordBasedSuggestions": "off",
+    "editor.formatOnPaste": false,
+    "editor.formatOnSave": true,
+    "editor.insertSpaces": true,
+    "editor.tabSize": 4,
+    "editor.codeActionsOnSave": {
+      "source.organizeImports": "explicit"
+    }
+  },
+  "python.analysis.typeCheckingMode": "basic",
+  "python.analysis.useLibraryCodeForTypes": true,
+  "python.analysis.completeFunctionParens": true,
+  "python.analysis.autoImportCompletions": true,
+  "black-formatter.args": [
+    "--line-length=80"
+  ],
+  "isort.args": [
+    "--profile",
+    "black"
+  ],
+  "isort.check": true,
+  "isort.importStrategy": "fromEnvironment",
+  "black-formatter.importStrategy": "fromEnvironment",
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.sortImports": "explicit",
+  },
+}

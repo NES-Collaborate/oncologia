@@ -1,13 +1,30 @@
 {% extends "base.html" %}
+
+<!-- Flash Messages -->
 {% import "components/flash_messages.html" as flash %}
 
-{% block title %}Home{% endblock %}
+<!-- Pendency Card -->
+{% import "components/pendency.html" as pendency %}
 
+<!-- Title -->
+{% block title %}Pendências{% endblock %}
+
+<!-- Content -->
 {% block content %}
 <div class="m-3">
   {{ flash.show() }}
-  <p class="text-center text-3xl">
-    Oncologia APP - Home
-  </p>
+  <p class="text-center text-3xl">Pendências</p>
+
+  <div class="my-3 grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
+    {{ pendency.script() }}
+    {% for pendency_obj in pendencies %}
+      {{ pendency.card(pendency_obj) }}
+    {% else %}
+      <div role="alert" class="alert alert-info">
+        <i data-lucide="info"></i>
+        <span>Nenhuma pendência no momento.</span>
+      </div>
+    {% endfor %}
+  </div>
 </div>
 {% endblock %}
