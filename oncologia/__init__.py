@@ -11,7 +11,7 @@ for ext in exts:
     module = __import__(f"{__name__}.extensions.{ext}", fromlist=[ext])
     module.init_app(app)
 
-views = ["auth", "home", "patient"]
+views = ["auth", "home", "patient", "api"]
 for view in views:
     module = __import__(f"{__name__}.views.{view}", fromlist=[view])
     app.register_blueprint(module.bp)
