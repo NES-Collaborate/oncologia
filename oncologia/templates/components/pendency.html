@@ -1,0 +1,82 @@
+{% macro card(pendency) %}
+<div class="card w-full bg-neutral text-neutral-content" id="card-{{ pendency.id }}">
+  <div class="card-body items-center text-center">
+    <h2 class="card-title">
+      {{ pendency.type.name }} - {{ pendency.due_date.strftime("%d/%m/%Y") }}
+    </h2>
+    <p>{{ pendency.description }}</p>
+    <div
+      class="tooltip tooltip-bottom tooltip-info"
+      data-tip="Ver paciente {{ pendency.patient.name }}"
+    >
+      <a
+        href="{{ url_for('patient.profile', ghc=pendency.patient.ghc) }}"
+        class="btn btn-accent"
+        target="_blank"
+      >
+        <i data-lucide="circle-user"></i>
+        {{ pendency.patient.name }} - {{ pendency.patient.ghc }}
+      </a>
+    </div>
+    <div class="card-actions justify-end mt-3">
+      <button class="btn btn-primary" id="btn-yes-{{ pendency.id }}">
+        <i data-lucide="party-popper"></i>
+        Compareceu
+      </button>
+      <button class="btn btn-error" id="btn-not-{{ pendency.id }}">
+        <i data-lucide="x"></i>
+        Não Compareceu
+      </button>
+    </div>
+  </div>
+  <script>
+    setCardActions("{{ pendency.id }}")
+  </script>
+</div>
+{% endmacro %}
+
+<!-- Script -->
+{% macro script() %}
+<script>
+  const setCardActions = (card_id) => {
+    const card = document.getElementById(`card-${card_id}`)
+    const btnYes = document.getElementById(`btn-yes-${card_id}`)
+    const btnNot = document.getElementById(`btn-not-${card_id}`)
+    const endpoint = `/api/pendency/${card_id}`
+
+    const markPendency = async (action) => {
+      const ok = action === "yes"
+      const res = await fetch(endpoint, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ id: card_id, ok }),
+      })
+
+      const data = await res.json()
+      return data
+    }
+
+    btnYes.addEventListener("click", async () => {
+      btnYes.disabled = true
+      const data = await markPendency("yes")
+      if (data.status) {
+        card.remove()
+      } else {
+        btnYes.disabled = false
+      }
+    })
+
+    btnNot.addEventListener("click", async () => {
+      btnNot.disabled = true
+      const data = await markPendency("no")
+      if (data.status) {
+        card.remove()
+      } else {
+        btnNot.disabled = false
+      }
+    })
+  }
+</script>
+{% endmacro %}
