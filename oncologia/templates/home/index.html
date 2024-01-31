@@ -19,12 +19,13 @@
     {{ pendency.script() }}
     {% for pendency_obj in pendencies %}
       {{ pendency.card(pendency_obj) }}
-    {% else %}
-      <div role="alert" class="alert alert-info">
-        <i data-lucide="info"></i>
-        <span>Nenhuma pendência no momento.</span>
-      </div>
     {% endfor %}
   </div>
+  {% if not pendencies %}
+    <div role="alert" class="alert alert-info flex justify-center">
+      <i data-lucide="info"></i>
+      <span>Nenhuma pendência no momento.</span>
+    </div>
+  {% endif %}
 </div>
 {% endblock %}

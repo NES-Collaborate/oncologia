@@ -1,5 +1,9 @@
 {% import "components/navbar.html" as navbar %}
 
+<!-- Toast Core -->
+
+{% import "components/toast.html" as toast %}
+
 <!DOCTYPE html>
 <html lang="pt-br">
   <head>
@@ -16,6 +20,7 @@
   <body>
     {{ navbar.show() }}
     <div class="container mx-auto">
+      {{ toast.show() }}
       {% block content %}{% endblock %}
     </div>
 
@@ -23,5 +28,6 @@
     <script>
       lucide.createIcons()
     </script>
+    {{ toast.script() }}
   </body>
 </html>

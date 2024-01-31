@@ -44,14 +44,13 @@
     const btnNot = document.getElementById(`btn-not-${card_id}`)
     const endpoint = `/api/pendency/${card_id}`
 
-    const markPendency = async (action) => {
-      const ok = action === "yes"
+    const markPendency = async (status) => {
       const res = await fetch(endpoint, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ id: card_id, ok }),
+        body: JSON.stringify({ status }),
       })
 
       const data = await res.json()
@@ -60,20 +59,24 @@
 
     btnYes.addEventListener("click", async () => {
       btnYes.disabled = true
-      const data = await markPendency("yes")
+      const data = await markPendency(2) // done
       if (data.status) {
+        setToast("Pendência marcada como concluída!")
         card.remove()
       } else {
+        setToast("Erro ao marcar pendência como concluída...", "warning")
         btnYes.disabled = false
       }
     })
 
     btnNot.addEventListener("click", async () => {
       btnNot.disabled = true
-      const data = await markPendency("no")
+      const data = await markPendency(3) // canceled
       if (data.status) {
+        setToast("Pendência marcada como cancelada!")
         card.remove()
       } else {
+        setToast("Erro ao marcar pendência como cancelada...", "warning")
         btnNot.disabled = false
       }
     })
