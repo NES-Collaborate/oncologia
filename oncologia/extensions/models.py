@@ -2,8 +2,11 @@ import enum
 import json
 from datetime import datetime
 from random import choices
+from datetime import date
+from typing import List, Optional
 
 from bcrypt import checkpw, gensalt, hashpw
+import sqlalchemy as sa
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -61,6 +64,68 @@ class Pendency(db.Model):
     )
 
 
+
+class Patient(db.Model):
+    __tablename__ = "patients"
+
+    ghc: Mapped[int] = mapped_column(sa.Integer, nullable=False, primary_key=True)
+    name: Mapped[str] = mapped_column(sa.String, nullable=False)
+    date_of_birth: Mapped[date] = mapped_column(sa.DateTime, nullable=False)
+    gender: Mapped[str] = mapped_column(sa.String, nullable=False)
+    race: Mapped[str] = mapped_column(sa.String, nullable=False)
+    cpf: Mapped[str]
+    address: Mapped[str]
+    city: Mapped[str] = mapped_column(sa.String, nullable=False)
+    state: Mapped[str] = mapped_column(sa.String, nullable=False)
+    phone: Mapped[List[str]]
+    cns: Mapped[str]
+
+
+class TumorCharacterization(db.Model):
+    __tablename__ = 'tumor_characterization'
+
+    id: Mapped[int] = mapped_column(sa.Integer, primary_key=True)
+    patient_ghc: Mapped[int] = mapped_column(sa.Integer, ForeignKey('patients.ghc'))
+    primary_tumor_location : Mapped[str] = mapped_column(sa.String, nullable= False)
+    histological_type_primary_tumor: Mapped[str]
+    staging: Mapped[str]    
+    location_distant_metastasis: Mapped[str]
+
+    patient = relationship('Patient', backref='tumor_characterization')
+
+
+class DiagnosisCharacterization(db.Model):
+    __tablename__ = 'diagnosis_characterization'
+    id: Mapped[int] = mapped_column(sa.Integer, primary_key=True)
+    patient_ghc: Mapped[int] = mapped_column(sa.Integer, ForeignKey('patients.ghc'))
+    primary_date_conclusion: Mapped[date] = mapped_column(sa.DateTime, nullable=False)
+    entry_poin: Mapped[str] = mapped_column(sa.String, nullable=False)
+    entray_team: Mapped[str] = mapped_column(sa.String, nullable=False)
+    date_diagnosis: Mapped[date] = mapped_column(sa.DateTime, nullable=False)
+    diagnostic_examination: Mapped[str] = mapped_column(sa.String, nullable=False)
+    diagnosis_location: Mapped[str] = mapped_column(sa.String, nullable=False)
+    
+    patient = relationship('Patient', backref='diagnosis_characterization')
+
+
+class EntryPoin(db.Model):
+    __tablename__ = 'entry_poin'
+
+    id: Mapped[int] = mapped_column(sa.Integer, primary_key=True)
+    name: Mapped[str] = mapped_column(sa.String, nullable=False)
+
+
+class EntreyTeam(db.Model):
+    __tablename__ = 'entry_team'
+
+    id: Mapped[int] = mapped_column(sa.Integer, primary_key=True)
+    name: Mapped[str] = mapped_column(sa.String, nullable=False)
+
+class TumosrGroup(db.Model):
+    __tablename__ = 'tumor_group'
+
+    id: Mapped[int] = mapped_column(sa.Integer, primary_key=True)
+    name: Mapped[str] = mapped_column(sa.String, nullable=False)
 @app.cli.command("init-db")
 def init_db():
     db.drop_all()
