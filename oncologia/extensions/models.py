@@ -85,7 +85,7 @@ class Patient(db.Model):
     gender: Mapped[str] = mapped_column(nullable=False)
     race: Mapped[str] = mapped_column(nullable=False)
     cpf: Mapped[str]
-    address: Mapped[str]
+    address: Mapped[str] = mapped_column(nullable=True)
     city: Mapped[str] = mapped_column(nullable=False)
     state: Mapped[str] = mapped_column(nullable=False)
     phones: Mapped[List[PhoneNumber]] = relationship(
@@ -122,13 +122,6 @@ class TumorCharacterization(db.Model):
     __tablename__ = "tumor_characterization"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    patient_ghc: Mapped[int] = mapped_column(
-        ForeignKey(
-            "patient.ghc",
-            use_alter=True,
-            name="fk_tumor_characterization_patient_ghc",
-        )
-    )
     histological_type_primary_tumor: Mapped[str]
     staging: Mapped[str] = mapped_column(nullable=False)
     location_distant_metastasis: Mapped[str]
@@ -152,13 +145,7 @@ class DiagnosisCharacterization(db.Model):
     __tablename__ = "diagnosis_characterization"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    patient_ghc: Mapped[int] = mapped_column(
-        ForeignKey(
-            "patient.ghc",
-            use_alter=True,
-            name="fk_diagnosis_characterization_patient_ghc",
-        )
-    )
+
     primary_date_consult: Mapped[date] = mapped_column(nullable=False)
     entry_poin_id: Mapped[int] = mapped_column(
         ForeignKey("entry_poin.id"), nullable=False
