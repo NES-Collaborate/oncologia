@@ -3,3 +3,7 @@ server:
 
 init-db:
 	@python -m flask init-db
+
+reset-db:
+	@rm -rf instance
+	@python -m flask init-db
