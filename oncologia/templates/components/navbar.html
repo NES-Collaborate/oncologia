@@ -13,8 +13,8 @@
               {% for endpoint, name, icon in navbar_pages %}
                 <li>
                   <a href="{{ url_for(endpoint) }}">
-                    {{ name }}
                     <i data-lucide="{{ icon }}"></i>
+                    {{ name }}
                   </a>
                 </li>
               {% endfor %}
