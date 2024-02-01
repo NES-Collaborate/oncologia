@@ -12,20 +12,20 @@
     <h1 class="text-3xl text-center">Login</h1>
     <form method="post" class="flex flex-col space-y-4 mt-4">
       {{ flash.show() }}
-      <label class="form-control w-full max-w-xs">
-        <div class="label">
-          <span class="label-text">Usuário</span>
-        </div>
-        <input type="text" name="username" class="input input-bordered w-full max-w-xs" />
-      </label>
-
-      <label class="form-control w-full max-w-xs">
-        <div class="label">
-          <span class="label-text">Senha</span>
-        </div>
-        <input type="text" name="password" class="input input-bordered w-full max-w-xs" />
-      </label>
-
+      {{ form.hidden_tag() }}
+      {% for field in form if field.widget.input_type != 'hidden' %}
+        <label class="form-control w-full max-w-xs">
+          <div class="label">
+            <span class="label-text">{{ field.label }}</span>
+            {% if field.errors %}
+              <span class="label-text-alt text-error">
+                {{ field.errors[0] }}
+              </span>
+            {% endif %}
+          </div>
+          {{ field(class="input input-bordered w-full max-w-xs") }}
+        </label>
+      {% endfor %}
       <button class="btn btn-outline btn-primary" type="submit">
         Entrar
         <i data-lucide="log-in"></i>

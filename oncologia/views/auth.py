@@ -9,30 +9,31 @@ from flask import (
 )
 
 from oncologia.extensions.models import User
+from oncologia.forms import LoginForm
 
 bp = Blueprint("auth", __name__, url_prefix="/auth")
 
 
 @bp.route("/login", methods=["POST", "GET"])
 def login():
+    form = LoginForm()
     if session.get("user_id"):
         return redirect(url_for("home.index"))
 
     def POST():
-        username = request.form.get("username")
-        password = request.form.get("password")
-        user = User.query.filter_by(username=username).first()
-        if not user or not user.checkpw(password):
-            return flash("Usuário e/ou Senha inválidos", "error")
-
-        session["user_id"] = user.id
-        flash("Login efetuado com sucesso", "success")
-        return redirect(url_for("home.index"))
+        if form.validate_on_submit():
+            user = User.query.filter_by(username=form.username.data).first()
+            if not user or not user.checkpw(form.password.data):
+                flash("Usuário e/ou Senha inválidos", "error")
+                return
+            session["user_id"] = getattr(user, "id")
+            flash("Login efetuado com sucesso", "success")
+            return redirect(url_for("home.index"))
 
     returned = locals().get(request.method, lambda: None)()
     if returned:
         return returned
-    return render_template("auth/login.html")
+    return render_template("auth/login.html", form=form)
 
 
 @bp.route("/logout")
