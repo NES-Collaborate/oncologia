@@ -5,7 +5,7 @@ from random import choices
 from typing import List
 
 from bcrypt import checkpw, gensalt, hashpw
-from sqlalchemy import ForeignKey, null
+from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from oncologia import app
@@ -71,6 +71,9 @@ class PhoneNumber(db.Model):
         ForeignKey("patient.ghc"), nullable=False
     )
 
+    def __init__(self, **kwargs):
+        for k, v in kwargs.items():
+            setattr(self, k, v)
 
 class Patient(db.Model):
     __tablename__ = "patient"
@@ -109,6 +112,9 @@ class Patient(db.Model):
 
     cns: Mapped[str]
 
+    def __init__(self, **kwargs):
+        for k, v in kwargs.items():
+            setattr(self, k, v)
 
 class TumorCharacterization(db.Model):
     __tablename__ = "tumor_characterization"
@@ -130,7 +136,11 @@ class TumorCharacterization(db.Model):
     )
     tumor_groupp = relationship("TumorGroup", uselist=False)
 
+    def __init__(self, **kwargs):
+        for k, v in kwargs.items():
+            setattr(self, k, v)
 
+            
 class DiagnosisLocation(enum.Enum):
     intern = 1
     extern = 2
@@ -138,6 +148,7 @@ class DiagnosisLocation(enum.Enum):
 
 class DiagnosisCharacterization(db.Model):
     __tablename__ = "diagnosis_characterization"
+    
     id: Mapped[int] = mapped_column(primary_key=True)
     patient_ghc: Mapped[int] = mapped_column(
         ForeignKey(
@@ -165,6 +176,9 @@ class DiagnosisCharacterization(db.Model):
     entry_team = relationship("EntryTeam", uselist=False)
     diagnosis_exam = relationship("ExamType", uselist=False)
 
+    def __init__(self, **kwargs):
+        for k, v in kwargs.items():
+            setattr(self, k, v)
 
 class ExamType(db.Model):
     """Tipo de exame."""
@@ -173,6 +187,9 @@ class ExamType(db.Model):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(nullable=False)
+
+    def __init__(self, name: str):
+        self.name = name
 
 
 class EntryPoin(db.Model):
@@ -183,6 +200,9 @@ class EntryPoin(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(nullable=False)
 
+    def __init__(self, name: str):
+        self.name = name
+
 
 class EntryTeam(db.Model):
     """Equipe de entrada."""
@@ -191,7 +211,9 @@ class EntryTeam(db.Model):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(nullable=False)
-
+    
+    def __init__(self, name: str):
+        self.name = name
 
 class TumorGroup(db.Model):
     """Grupo de tumor."""
@@ -201,6 +223,8 @@ class TumorGroup(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(nullable=False)
 
+    def __init__(self, name: str):
+        self.name = name
 
 class TypeTreatment(db.Model):
     """Tipo de tratamento."""
