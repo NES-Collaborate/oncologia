@@ -84,7 +84,7 @@ class Patient(db.Model):
     birthday: Mapped[date] = mapped_column(nullable=False)
     gender: Mapped[str] = mapped_column(nullable=False)
     race: Mapped[str] = mapped_column(nullable=False)
-    cpf: Mapped[str]
+    cpf: Mapped[str] = mapped_column(nullable=True)
     address: Mapped[str] = mapped_column(nullable=True)
     city: Mapped[str] = mapped_column(nullable=False)
     state: Mapped[str] = mapped_column(nullable=False)
@@ -111,7 +111,7 @@ class Patient(db.Model):
         foreign_keys=[diagnosis_characterization_id],
     )
 
-    cns: Mapped[str]
+    cns: Mapped[str] = mapped_column(nullable=True)
 
     def __init__(self, **kwargs):
         for k, v in kwargs.items():
