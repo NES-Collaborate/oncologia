@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+<!-- Title -->
+{% block title %}Adicionar Paciente{% endblock %}
+
+<!-- Flash Messages -->
+{% import "components/flash_messages.html" as flash %}
+
+<!-- Content -->
+{% block content %}
+<h1 class="text-3xl text-center font-bold my-2">Adicionar Paciente</h1>
+{{ flash.show() }}
+<form class="grid grid-cols-2 lg:grid-cols-3 gap-4 mb-10" method="post">
+  {{ form.hidden_tag() }}
+  <!--  -->
+  {% for field in form if field.widget.input_type != 'hidden' %}
+  <!-- -->
+  {% set is_subform = isinstance(field, types("form_field")) %}
+  <!--  -->
+  {% set is_boolean = isinstance(sub_field, types("boolean_field")) %}
+  <!--  -->
+  {% set is_required = field.flags.required %}
+  <label
+    class="{{ clsx('form-control w-full', ['col-span-2 lg:col-span-3', is_subform]) }}"
+  >
+    <div class="label">
+      <span class="{{ clsx('label-text', ['text-xl font-bold', is_subform]) }}">
+        {{ field.label }}
+        {% if is_required %}<span class="text-error">*</span>{% endif %}
+      </span>
+      {% if field.errors %}
+      <span class="label-text-alt text-error">{{ field.errors[0] }}</span>
+      {% endif %}
+    </div>
+    <!-- -->
+    {% if is_subform %}
+    <div class="grid grid-cols-2 lg:grid-cols-3 gap-4">
+      {{ field.hidden_tag() }}
+      {% for sub_field in field if sub_field.widget.input_type != 'hidden' %}
+      <!--  -->
+      {% set is_boolean = isinstance(sub_field, types("boolean_field")) %}
+      <!--  -->
+      {% set is_required = sub_field.flags.required %}
+      <label class="form-control w-full">
+        <div class="label">
+          <span class="label-text">
+            {{ sub_field.label }}
+            {% if is_required %}<span class="text-error">*</span>{% endif %}
+          </span>
+        </div>
+        {% if sub_field.errors %}
+        <span class="label-text-alt text-error">{{ sub_field.errors[0] }}</span>
+        {% endif %}
+        <!--  -->
+        <div class="{{ clsx(["flex items-center h-full", is_boolean]) }}">
+          {{ sub_field(class=clsx(["input input-bordered w-full", not is_boolean],
+          ["checkbox checkbox-lg", is_boolean])) }}
+        </div>
+      </label>
+      {% endfor %}
+    </div>
+    {% else %}
+    <!-- -->
+    {{ field(class=clsx(["input input-bordered w-full", not is_boolean] ,
+        ["checkbox checkbox-lg", is_boolean])) }}
+    <!-- -->
+    {% endif %}
+  </label>
+  <!-- -->
+  {% endfor %}
+
+  <div class="col-span-2 lg:col-span-3 flex justify-center">
+    <button class="btn btn-outline btn-primary w-2/5" type="submit">
+      Cadastrar
+      <i data-lucide="plus"></i>
+    </button>
+  </div>
+</form>
+{% endblock %}

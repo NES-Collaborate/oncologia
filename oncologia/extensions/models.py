@@ -75,6 +75,7 @@ class PhoneNumber(db.Model):
         for k, v in kwargs.items():
             setattr(self, k, v)
 
+
 class Patient(db.Model):
     __tablename__ = "patient"
 
@@ -116,6 +117,7 @@ class Patient(db.Model):
         for k, v in kwargs.items():
             setattr(self, k, v)
 
+
 class TumorCharacterization(db.Model):
     __tablename__ = "tumor_characterization"
 
@@ -134,13 +136,13 @@ class TumorCharacterization(db.Model):
     tumor_group_id: Mapped[int] = mapped_column(
         ForeignKey("tumor_group.id"), nullable=False
     )
-    tumor_groupp = relationship("TumorGroup", uselist=False)
+    tumor_group = relationship("TumorGroup", uselist=False)
 
     def __init__(self, **kwargs):
         for k, v in kwargs.items():
             setattr(self, k, v)
 
-            
+
 class DiagnosisLocation(enum.Enum):
     intern = 1
     extern = 2
@@ -148,7 +150,7 @@ class DiagnosisLocation(enum.Enum):
 
 class DiagnosisCharacterization(db.Model):
     __tablename__ = "diagnosis_characterization"
-    
+
     id: Mapped[int] = mapped_column(primary_key=True)
     patient_ghc: Mapped[int] = mapped_column(
         ForeignKey(
@@ -179,6 +181,7 @@ class DiagnosisCharacterization(db.Model):
     def __init__(self, **kwargs):
         for k, v in kwargs.items():
             setattr(self, k, v)
+
 
 class ExamType(db.Model):
     """Tipo de exame."""
@@ -211,9 +214,10 @@ class EntryTeam(db.Model):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(nullable=False)
-    
+
     def __init__(self, name: str):
         self.name = name
+
 
 class TumorGroup(db.Model):
     """Grupo de tumor."""
@@ -225,6 +229,7 @@ class TumorGroup(db.Model):
 
     def __init__(self, name: str):
         self.name = name
+
 
 class TypeTreatment(db.Model):
     """Tipo de tratamento."""
@@ -278,4 +283,7 @@ def init_db():
     db.session.add(user)
     db.session.commit()
     app.logger.info("Database initialized")
+    json.dump(
+        user_data, open("credentials.json", "w"), indent=4, ensure_ascii=False
+    )
     print(json.dumps(user_data, indent=4))
