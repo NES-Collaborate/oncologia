@@ -12,6 +12,7 @@ bcrypt = "^4.1.2"
 flask-sqlalchemy = "^3.1.1"
 python-dotenv = "^1.0.1"
 flask-session = "^0.6.0"
+flask-wtf = "^1.2.1"
 
 
 [build-system]
