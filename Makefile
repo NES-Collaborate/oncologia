@@ -7,8 +7,7 @@ init-db:
 
 reset-db:
 	@rm -rf instance
-	@python -m flask init-db
-
+	@make init-db
 
 fake-db:
 	@python generate_fake_data.py
