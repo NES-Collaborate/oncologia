@@ -15,6 +15,9 @@ flask-session = "^0.6.0"
 flask-wtf = "^1.2.1"
 
 
+[tool.poetry.group.dev.dependencies]
+ipython = "^8.21.0"
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
