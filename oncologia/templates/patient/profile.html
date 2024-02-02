@@ -1,9 +1,41 @@
 {% extends "base.html" %}
+<!--  -->
+{% block title %}Paciente - {{ patient.name }} {% endblock %}
 
-{% block title %}Perfil de Pacientes{% endblock %}
+<!--  -->
+{% import "components/patient_card.html" as patient_card %}
 
+<!--  -->
 {% block content %}
-<div class="m-3">
-    <p class="text-center text-3xl">Perfil do Paciente {{ patient.tumor_characterization.tumor_group.name }}</p>
+<div class="container mx-auto p-5">
+    {{ patient_card.render(patient) }}
+    <div class="card shadow-xl bg-base-200 mt-6">
+        <div class="card-body">
+            <h3 class="card-title flex items-center gap-2 text-accent text-xl mt-4">
+                <i data-lucide="list"></i>
+                Lista de Pendências
+            </h3>
+            <div class="overflow-x-auto">
+                <table class="table table-zebra w-full">
+                    <thead>
+                        <tr>
+                            <th>Tipo</th>
+                            <th>Descrição</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for pendencia in patient.pendencies %}
+                        <tr>
+                            <td>{{ pendencia.type.name }}</td>
+                            <td>{{ pendencia.description }}</td>
+                            <td>{{ translator(pendencia.status.name) }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    {% endblock %}
 </div>
-{% endblock %}
