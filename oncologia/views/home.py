@@ -1,6 +1,7 @@
 from datetime import datetime
 
 from flask import Blueprint, flash, render_template, request
+from sqlalchemy import or_
 
 from oncologia.extensions.database import db
 from oncologia.extensions.models import (
@@ -17,7 +18,7 @@ from oncologia.extensions.models import (
     TumorGroup,
 )
 from oncologia.forms import PatientForm
-from oncologia.utils import login_required
+from oncologia.utils import login_required, search_patient_query
 
 bp = Blueprint("home", __name__)
 
@@ -143,3 +144,15 @@ def add_patient():
         if not returnerd
         else returnerd
     )
+
+
+@bp.route("/search-patient")
+@login_required
+def search_patient():
+    q = request.args.get("q")
+    page = request.args.get("p", 1, type=int)
+    per_page = 15
+
+    query = search_patient_query(q)
+    patients = query.paginate(page=page, per_page=per_page)
+    return render_template("home/search_patient.html", patients=patients)

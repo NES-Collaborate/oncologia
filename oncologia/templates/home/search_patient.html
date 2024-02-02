@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+
+<!-- Title -->
+{% block title %}Pesquisar Pacientes{% endblock %}
+
+<!-- Pagination -->
+{% import "components/pagination.html" as pagination %}
+
+<!-- Patient Card -->
+{% import "components/patient_card.html" as patient_card %}
+
+<!-- Content -->
+{% block content %}
+<div class="m-3">
+  <h1 class="text-center text-3xl">Pesquisar Pacientes</h1>
+  <form class="flex justify-center my-3">
+    <div class="join">
+      <input
+        type="text"
+        name="q"
+        class="input input-bordered join-item"
+        placeholder="Nome, GHC, CPF, Telefone..."
+        value="{{ request.args.get('q', '') }}"
+      />
+      <button class="btn btn-primary join-item">
+        <div class="tooltip" data-tip="Pesquisar">
+          <i data-lucide="search"></i>
+        </div>
+      </button>
+    </div>
+  </form>
+
+  <div class="overflow-x-auto">
+    <table class="table text-center">
+      <!-- head -->
+      <thead>
+        <tr>
+          <th>Nome</th>
+          <th>GHC</th>
+          <th>CPF</th>
+          <th>CNS</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% if patients.items %}
+        <!--  -->
+        {% for patient in patients.items %}
+        <dialog id="modal_{{ patient.ghc }}" class="modal modal-bottom sm:modal-middle">
+          <div class="modal-box max-w-5xl">
+            <form method="dialog">
+              <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2 z-10">
+                <i data-lucide="x"></i>
+              </button>
+            </form>
+            {{ patient_card.render(patient) }}
+          </div>
+        </dialog>
+        <tr>
+          <th>{{ patient.name }}</th>
+          <th>{{ patient.ghc }}</th>
+          <th>{{ patient.cpf or 'N/A' }}</th>
+          <th>{{ patient.cns or 'N/A' }}</th>
+          <th>
+            <a
+              href="{{ url_for('patient.profile', id=patient.ghc) }}"
+              class="btn btn-circle"
+            >
+              <div
+                class="tooltip tooltip-left"
+                data-tip="Ver paciente {{ patient.name }}"
+              >
+                <i data-lucide="circle-user"></i>
+              </div>
+            </a>
+            <button class="btn btn-circle" onclick="modal_{{ patient.ghc }}.showModal()">
+              <div class="tooltip" data-tip="Ver detalhes">
+                <i data-lucide="info"></i>
+              </div>
+            </button>
+          </th>
+        </tr>
+        {% endfor %}
+        <!--  -->
+        {% else %}
+        <tr>
+          <th colspan="5">
+            <div role="alert" class="flex justify-center alert alert-info">
+              <i data-lucide="info"></i>
+              <span>Nenhum paciente encontrado.</span>
+            </div>
+          </th>
+        </tr>
+        {% endif %}
+      </tbody>
+    </table>
+
+    <!-- Pagination -->
+    <div class="flex justify-center">{{ pagination.show(patients) }}</div>
+  </div>
+</div>
+
+<div class="tooltip tooltip-left bottom-0 right-2 fixed" data-tip="Exportar Resultados">
+  <a
+    href="{{ url_for('api.download_patients', q=request.args.get('q', '')) }}"
+    class="btn btn-accent my-3"
+  >
+    <i data-lucide="download"></i>
+  </a>
+</div>
+
+<script></script>
+{% endblock %}

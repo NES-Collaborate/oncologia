@@ -15,6 +15,7 @@ flask-session = "^0.6.0"
 flask-wtf = "^1.2.1"
 requests = "^2.31.0"
 pandas = "^2.2.0"
+openpyxl = "^3.1.2"
 
 
 [tool.poetry.group.dev.dependencies]

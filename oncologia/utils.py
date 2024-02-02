@@ -1,7 +1,11 @@
 from functools import wraps
+from typing import Optional
 
 import requests
 from flask import flash, redirect, session, url_for
+from sqlalchemy import or_
+
+from oncologia.extensions.models import Patient
 
 
 def login_required(func):
@@ -21,3 +25,17 @@ def get_website_agent() -> requests.Session:
         {"User-Agent": "Mozilla/5.0 @nes-collaborate/oncologia"}
     )
     return session
+
+
+def search_patient_query(q: Optional[str] = None):
+    query = Patient.query
+    if q:
+        query = query.filter(
+            or_(
+                Patient.name.like(f"%{q}%"),
+                Patient.ghc == q,
+                Patient.cpf.like(f"%{q}%"),
+                Patient.cns.like(f"%{q}%"),
+            )
+        )
+    return query

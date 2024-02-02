@@ -9,6 +9,7 @@ def __get_nav_pages():
     return [
         ("home.index", "Home", "home"),
         ("home.add_patient", "Adicionar Paciente", "user-plus"),
+        ("home.search_patient", "Buscar Pacientes", "search"),
     ]
 
 
