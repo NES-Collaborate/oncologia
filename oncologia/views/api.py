@@ -1,10 +1,12 @@
+import io
 from http import HTTPStatus
 
-from flask import Blueprint, jsonify, request
+import pandas as pd
+from flask import Blueprint, jsonify, request, send_file
 
 from oncologia.extensions.database import db
 from oncologia.extensions.models import Pendency, PendencyStatus
-from oncologia.utils import login_required
+from oncologia.utils import login_required, search_patient_query
 
 bp = Blueprint("api", __name__, url_prefix="/api")
 
@@ -36,4 +38,22 @@ def update_pendency(pendency_id: int):
     return (
         jsonify({"status": True, "message": "Pendency updated"}),
         HTTPStatus.OK,
+    )
+
+
+@bp.get("/download-patients")
+@login_required
+def download_patients():
+    q = request.args.get("q")
+    query = search_patient_query(q)
+    patients = query.all()
+
+    df = pd.DataFrame([patient.to_json() for patient in patients])
+    buffer = io.BytesIO()
+    with pd.ExcelWriter(buffer) as writer:
+        df.to_excel(writer, index=False)
+
+    buffer.seek(0)
+    return send_file(
+        buffer, as_attachment=True, download_name=f"pacientes.xlsx"
     )

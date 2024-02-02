@@ -1,0 +1,40 @@
+{% macro show(pagination) %}
+<!--  -->
+{% if pagination.pages > 1 %}
+<div class="join">
+  {% if pagination.has_prev %}
+  <a
+    class="join-item btn"
+    href="?q={{ request.args.get('q', '') }}&p={{ pagination.prev_num }}"
+  >
+    Anterior
+  </a>
+  {% endif %}
+  <!-- -->
+  {% for page in pagination.iter_pages() %}
+  <!--  -->
+  {% if page %}
+  <a
+    class="join-item btn {% if page == pagination.page %}btn-primary{% endif %}"
+    href="?q={{ request.args.get('q', '') }}&p={{ page }}"
+  >
+    {{ page }}
+  </a>
+  {% else %}
+  <span class="join-item btn">...</span>
+  {% endif %}
+  <!--  -->
+  {% endfor %}
+  <!--  -->
+  {% if pagination.has_next %}
+  <a
+    class="join-item btn"
+    href="?q={{ request.args.get('q', '') }}&p={{ pagination.next_num }}"
+  >
+    Próxima
+  </a>
+  {% endif %}
+</div>
+{% endif %}
+<!--  -->
+{% endmacro %}

@@ -8,7 +8,8 @@ from wtforms.fields.form import FormField
 def _get_nav_pages():
     return [
         ("home.index", "Home", "home"),
-        ("home.add_patient", "Adicionar Paciente", "user-plus"),
+        ("patient.create", "Adicionar Paciente", "user-plus"),
+        ("home.search_patient", "Buscar Pacientes", "search"),
     ]
 
 

@@ -2,7 +2,7 @@ import enum
 import json
 from datetime import date, datetime
 from random import choices
-from typing import List
+from typing import List, Optional
 
 from bcrypt import checkpw, gensalt, hashpw
 from sqlalchemy import ForeignKey
@@ -93,7 +93,8 @@ class Patient(db.Model):
     city: Mapped[str] = mapped_column(nullable=False)
     state: Mapped[str] = mapped_column(nullable=False)
     phones: Mapped[List[PhoneNumber]] = relationship(
-        PhoneNumber, backref="patient_phone"
+        PhoneNumber,
+        backref="patient_phone",
     )
     tumor_characterization_id: Mapped[int] = mapped_column(
         ForeignKey("tumor_characterization.id"), nullable=False
@@ -126,14 +127,51 @@ class Patient(db.Model):
         for k, v in kwargs.items():
             setattr(self, k, v)
 
+    def to_json(self):
+        labels = {
+            "ghc": "GHC",
+            "name": "Nome",
+            "birthday": "Data de Nascimento",
+            "gender": "Sexo",
+            "race": "Raça",
+            "cpf": "CPF",
+            "address": "Endereço",
+            "city": "Cidade",
+            "state": "Estado",
+            "phones": "Telefones",
+        }
+        data = {
+            labels.get(c.name, c.name): getattr(self, c.name)
+            for c in getattr(self, "__table__").columns
+            if c.name
+            not in (
+                "tumor_characterization_id",
+                "diagnosis_characterization_id",
+                "phones",
+                "pendencies",
+            )
+        }
+
+        data[labels["phones"]] = ",".join(
+            [f"{p.number} (wpp: {p.is_wpp})" for p in self.phones]
+        )
+
+        data.update(self.tumor_characterization.to_json())
+        data.update(self.diagnosis_characterization.to_json())
+        return data
+
 
 class TumorCharacterization(db.Model):
     __tablename__ = "tumor_characterization"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    histological_type_primary_tumor: Mapped[str]
-    staging: Mapped[str] = mapped_column(nullable=False)
-    location_distant_metastasis: Mapped[str]
+    histological_type_primary_tumor: Mapped[Optional[str]] = mapped_column(
+        nullable=True,
+    )
+    staging: Mapped[Optional[str]] = mapped_column(unique=True, nullable=True)
+    location_distant_metastasis: Mapped[Optional[str]] = mapped_column(
+        nullable=True
+    )
 
     tumor_group_id: Mapped[int] = mapped_column(
         ForeignKey("tumor_group.id"), nullable=False
@@ -143,6 +181,15 @@ class TumorCharacterization(db.Model):
     def __init__(self, **kwargs):
         for k, v in kwargs.items():
             setattr(self, k, v)
+
+    def to_json(self):
+        data = {
+            "Local do Tumor Primário": f"{self.tumor_group.name} ({self.tumor_group.id})",
+            "Tipo Histológico do Tumor Primário (CID)": self.histological_type_primary_tumor,
+            "Estadiamento (TNM)": self.staging,
+            "Localização da Metastase a Distância": self.location_distant_metastasis,
+        }
+        return data
 
 
 class DiagnosisLocation(enum.Enum):
@@ -177,6 +224,19 @@ class DiagnosisCharacterization(db.Model):
     def __init__(self, **kwargs):
         for k, v in kwargs.items():
             setattr(self, k, v)
+
+    def to_json(self):
+        data = {
+            "Data 1a Consulta no Hospital": self.primary_date_consult.strftime(
+                "%d/%m/%Y"
+            ),
+            "Data do Diagnóstico": self.diagnosis_date.strftime("%d/%m/%Y"),
+            "Local do Diagnóstico": self.diagnosis_location.value,
+            "Exame no Diagnóstico": self.diagnosis_exam.name,
+            "Equipe de Entrada": f"{self.entry_team.name} ({self.entry_team.id})",
+            "Porta de Entrada": f"{self.entry_poin.name} ({self.entry_poin.id})",
+        }
+        return data
 
 
 class ExamType(db.Model):
