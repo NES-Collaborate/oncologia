@@ -1,4 +1,4 @@
-{% macro render(patient) %}
+{% import "components/status.html" as status %} {% macro render(patient) %}
 <div class="card bg-base-200 shadow-xl">
   <div class="card-body">
     <h2 class="card-title text-primary text-3xl">
@@ -15,7 +15,7 @@
       <p><strong>Nome:</strong> {{ patient.name }}</p>
       <p><strong>GHC:</strong> {{ patient.ghc }}</p>
       <p><strong>Nascimento:</strong> {{ patient.birthday.strftime('%d/%m/%Y') }}</p>
-      <p><strong>Gênero:</strong> {{ patient.gender }}</p>
+      <p><strong>Sexo:</strong> {{ patient.gender }}</p>
       <p><strong>Raça:</strong> {{ patient.race }}</p>
       <p><strong>CPF:</strong> {{ patient.cpf or 'N/A' }}</p>
       <p><strong>Endereço:</strong> {{ patient.address or 'N/A' }}</p>
@@ -43,34 +43,69 @@
     </p>
     {% endfor %}
 
-    <h3 class="flex items-center gap-2 text-accent text-xl mt-4">
-      <i data-lucide="stethoscope"></i>
-      Caracterização do Tumor
-    </h3>
-    <p>
-      <strong>Tipo:</strong> {{
-      patient.tumor_characterization.histological_type_primary_tumor }}
-    </p>
-    <p>
-      <strong>Estadiamento (TNM):</strong> {{ patient.tumor_characterization.staging }}
-    </p>
-    <p>
-      <strong>Localização:</strong> {{
-      patient.tumor_characterization.location_distant_metastasis }}
-    </p>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <h3
+        class="flex items-center gap-2 text-accent text-xl mt-4 col-span-1 md:col-span-2 lg:col-span-3"
+      >
+        <i data-lucide="stethoscope"></i>
+        Caracterização do Tumor
+      </h3>
+      <p>
+        <strong>Local do Tumor Primário:</strong>
+        {{ patient.tumor_characterization.tumor_group.name }}
+      </p>
+      <p>
+        <strong>Tipo Histológico do Tumor Primário (CID):</strong>
+        {{ patient.tumor_characterization.histological_type_primary_tumor }}
+      </p>
+      <p>
+        <strong>Estadiamento (TNM):</strong>
+        {{ patient.tumor_characterization.staging }}
+      </p>
+      <p>
+        <strong>Localização da Metástase à Distância:</strong>
+        {{ patient.tumor_characterization.location_distant_metastasis }}
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <h3
+        class="flex items-center gap-2 text-accent text-xl mt-4 col-span-1 md:col-span-2 lg:col-span-3"
+      >
+        <i data-lucide="activity"></i>
+        Caracterização do Diagnóstico
+      </h3>
+      <p>
+        <strong>Data 1ª Consulta no Hospital:</strong>
+        {{ patient.diagnosis_characterization.primary_date_consult.strftime('%d/%m/%Y') }}
+      </p>
+      <p>
+        <strong>Porta de Entrada:</strong>
+        {{ patient.diagnosis_characterization.entry_poin.name }}
+      </p>
+      <p>
+        <strong>Equipe de Entrada:</strong>
+        {{ patient.diagnosis_characterization.entry_team.name }}
+      </p>
+      <p>
+        <strong>Data do Diagnóstico:</strong>
+        {{ patient.diagnosis_characterization.diagnosis_date.strftime('%d/%m/%Y') }}
+      </p>
+      <p>
+        <strong>Local do Diagnóstico:</strong>
+        {{ translator(patient.diagnosis_characterization.diagnosis_location.name) }}
+      </p>
+      <p>
+        <strong>Exame no Diagnóstico:</strong>
+        {{ patient.diagnosis_characterization.diagnosis_exam.name }}
+      </p>
+    </div>
 
     <h3 class="flex items-center gap-2 text-accent text-xl mt-4">
-      <i data-lucide="activity"></i>
-      Caracterização do Diagnóstico
+      <i data-lucide="heart-pulse"></i>
+      Status do Paciente
     </h3>
-    <p>
-      <strong>Data:</strong> {{
-      patient.diagnosis_characterization.diagnosis_date.strftime('%d/%m/%Y') }}
-    </p>
-    <p>
-      <strong>Localização:</strong> {{
-      translator(patient.diagnosis_characterization.diagnosis_location.name) }}
-    </p>
+      {{ status.render(patient.statuses[0]) }}
 
     <br />
     <div class="card-actions justify-end">

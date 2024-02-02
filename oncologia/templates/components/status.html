@@ -1,0 +1,14 @@
+<!--  -->
+{% macro render(status) %}
+<h3 class="flex items-center gap-2 text-lg my-4 col-span-1 md:col-span-2 lg:col-span-3">
+  <i data-lucide="candlestick-chart"></i>
+  {{ status.type.value }}
+</h3>
+
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+  {% for field in status_fields(status.type) %}
+  <p><strong>{{ field.name }}:</strong> {{ field.getter(status) }}</p>
+  {% endfor %}
+</div>
+<!--  -->
+{% endmacro %}

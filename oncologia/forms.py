@@ -237,7 +237,7 @@ class PendencyForm(FlaskForm):
         ]
 
 
-class InTreatmentTreatiesNonMelanomaSkinForm(FlaskForm):
+class InTreatmentTreatedNonMelanomaSkinForm(FlaskForm):
     date_primary_treatment = DateField(
         "Data do Primeiro Tratamento", validators=[DataRequired()]
     )
@@ -248,7 +248,7 @@ class InTreatmentTreatiesNonMelanomaSkinForm(FlaskForm):
     complement = StringField("Complemento")
 
     def __init__(self, *args, **kwargs):
-        super(InTreatmentTreatiesNonMelanomaSkinForm, self).__init__(
+        super(InTreatmentTreatedNonMelanomaSkinForm, self).__init__(
             *args, **kwargs
         )
 

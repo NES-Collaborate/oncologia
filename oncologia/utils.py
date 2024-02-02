@@ -46,13 +46,13 @@ def get_status_type_form(status_type: StatusType):
         AbandonmentRefusalTreatmentUnableTreatForm,
         DeathForm,
         DefaultStatusForm,
-        InTreatmentTreatiesNonMelanomaSkinForm,
+        InTreatmentTreatedNonMelanomaSkinForm,
         PalliatievCareConservativeTreatmentForm,
     )
 
     data = {
-        StatusType.in_treatment_treaties: InTreatmentTreatiesNonMelanomaSkinForm,
-        StatusType.non_melanoma_skin: InTreatmentTreatiesNonMelanomaSkinForm,
+        StatusType.in_treatment_treated: InTreatmentTreatedNonMelanomaSkinForm,
+        StatusType.non_melanoma_skin: InTreatmentTreatedNonMelanomaSkinForm,
         StatusType.death: DeathForm,
         StatusType.palliative_care: PalliatievCareConservativeTreatmentForm,
         StatusType.conservative_treatment: PalliatievCareConservativeTreatmentForm,

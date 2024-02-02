@@ -308,7 +308,7 @@ class TypeTreatment(db.Model):
 
 
 class StatusType(enum.Enum):
-    in_treatment_treaties = "Em Tratamento/Tratados"
+    in_treatment_treated = "Em Tratamento/Tratado"
     non_melanoma_skin = "Pele Não Melanoma"
     death = "Óbito"
     palliative_care = "Cuidado Paliativo"
@@ -322,7 +322,7 @@ class Status(db.Model):
     __tablename__ = "status"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    ghc_patient_ghc: Mapped[int] = mapped_column(ForeignKey("patient.ghc"))
+    patient_ghc: Mapped[int] = mapped_column(ForeignKey("patient.ghc"))
     type: Mapped[StatusType]
     created_at: Mapped[datetime] = mapped_column(
         nullable=False, default=lambda: datetime.now()
@@ -335,8 +335,6 @@ class Status(db.Model):
         ForeignKey("entry_team.id")
     )
     complement: Mapped[Optional[str]]
-    time_start_treatment: Mapped[Optional[int]]
-    time_arrial_treatment: Mapped[Optional[int]]
     time_radiotherapy: Mapped[Optional[int]]
     date_death: Mapped[Optional[date]]
     place_death: Mapped[Optional[DiagnosisLocation]]
