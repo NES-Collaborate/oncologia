@@ -5,19 +5,19 @@ from wtforms import BooleanField
 from wtforms.fields.form import FormField
 
 
-def __get_nav_pages():
+def _get_nav_pages():
     return [
         ("home.index", "Home", "home"),
         ("home.add_patient", "Adicionar Paciente", "user-plus"),
     ]
 
 
-def __get_types(_type: str):
+def _get_types(_type: str):
     types = {"form_field": FormField, "boolean_field": BooleanField}
     return types.get(_type, type(None))
 
 
-def __clsx(*args):
+def _clsx(*args):
     base = []
     for arg in args:
         if isinstance(arg, str) and arg:
@@ -31,7 +31,7 @@ def __clsx(*args):
     return " ".join(base)
 
 
-def __translator(text: str):
+def _translator(text: str):
     translations = {
         "extern": "Externo",
         "intern": "Interno",
@@ -43,12 +43,13 @@ def __translator(text: str):
 
 
 utils = {
-    "get_navigation_pages": __get_nav_pages,
+    "get_navigation_pages": _get_nav_pages,
     "today": lambda: datetime.datetime.now().strftime("%d/%m/%Y"),
     "isinstance": isinstance,
-    "types": __get_types,
-    "clsx": __clsx,
-    "translator": __translator,
+    "types": _get_types,
+    "clsx": _clsx,
+    "translator": _translator,
+    "all": all,
 }
 
 

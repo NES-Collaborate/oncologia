@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+<!--  -->
+{% block title %}Adicionar Pendência{% endblock %}
+
+<!--  -->
+{% import "components/flash_messages.html" as flash %}
+
+<!--  -->
+{% block content %}
+<h1 class="text-3xl text-center font-bold my-2">Adicionar Pendência</h1>
+{{ flash.show() }}
+<form class="grid grid-cols-2 lg:grid-cols-3 gap-4 mb-10" method="post">
+    {{ form.hidden_tag() }}
+    <!--  -->
+    {% for field in form if field.widget.input_type != 'hidden' %}
+    <!--  -->
+    {% set is_boolean = field.type == 'BooleanField' %}
+    <!--  -->
+    {% set is_textarea = field.type == 'TextAreaField' %}
+    <!--  -->
+    {% set is_text_input = field.type == 'StringField' %}
+    <!--  -->
+    {% set is_select = field.type == 'SelectField' %}
+    <!--  -->
+    {% set is_required = field.flags.required %}
+    <label
+        class="form-control w-full {{ 'col-span-2 lg:col-span-3' if field.widget.input_type == 'SelectMultipleField' or field.widget.input_type == 'SelectField' }}"
+    >
+        <div class="label">
+            <span class="label-text">
+                {{ field.label }}
+                <!--  -->
+                {% if is_required %}
+                <!--  -->
+                <span class="text-error">*</span>
+                <!--  -->
+                {% endif %}
+            </span>
+        </div>
+        {% if field.errors %}
+        <span class="label-text-alt text-error">{{ field.errors[0] }}</span>
+        {% endif %}
+        <div class="{{ 'flex items-center h-full' if is_boolean }}">
+            {{ field(class=clsx(["input input-bordered", is_text_input], ["checkbox
+            checkbox-lg", is_boolean], ["textarea h-56", is_textarea], ["select
+            select-bordered", is_select], ["input input-bordered", not all([is_boolean,
+            is_select, is_text_input, is_textarea])], "w-full")) }}
+        </div>
+    </label>
+    {% endfor %}
+    <div class="col-span-2 lg:col-span-3 flex justify-center">
+        <button class="btn btn-outline btn-primary w-2/5" type="submit">
+            Cadastrar
+            <i data-lucide="plus"></i>
+        </button>
+    </div>
+</form>
+{% endblock %}

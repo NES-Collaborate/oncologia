@@ -22,6 +22,7 @@
                             <th>Tipo</th>
                             <th>Descrição</th>
                             <th>Status</th>
+                            <th>Data</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -30,6 +31,7 @@
                             <td>{{ pendencia.type.name }}</td>
                             <td>{{ pendencia.description }}</td>
                             <td>{{ translator(pendencia.status.name) }}</td>
+                            <td>{{ pendencia.due_date.strftime('%d/%m/%Y') }}</td>
                         </tr>
                         {% endfor %}
                     </tbody>

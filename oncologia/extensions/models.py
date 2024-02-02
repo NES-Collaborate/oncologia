@@ -33,6 +33,9 @@ class PendencyType(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     name: Mapped[str] = mapped_column(nullable=False)
 
+    def __init__(self, name: str):
+        self.name = name
+
 
 class PendencyStatus(enum.Enum):
     pending = 1
@@ -56,6 +59,10 @@ class Pendency(db.Model):
     type: Mapped[PendencyType] = relationship(
         "PendencyType", backref="pendencies_type", foreign_keys=[type_id]
     )
+
+    def __init__(self, **kwargs):
+        for k, v in kwargs.items():
+            setattr(self, k, v)
 
 
 class PhoneNumber(db.Model):
@@ -107,7 +114,12 @@ class Patient(db.Model):
         uselist=False,
         foreign_keys=[diagnosis_characterization_id],
     )
-    pendencies = db.relationship("Pendency", backref="patient", lazy=True)
+    pendencies = db.relationship(
+        "Pendency",
+        backref="patient",
+        lazy=True,
+        order_by=Pendency.due_date.asc(),
+    )
     cns: Mapped[str] = mapped_column(nullable=True)
 
     def __init__(self, **kwargs):

@@ -1,13 +1,20 @@
-from datetime import date
-
 from flask_wtf import FlaskForm
-from wtforms import BooleanField, DateField, FormField, SelectField, StringField
+from wtforms import (
+    BooleanField,
+    DateField,
+    FormField,
+    SelectField,
+    StringField,
+    TextAreaField,
+)
 from wtforms.validators import DataRequired
 
+from oncologia.extensions.jija_utils import _translator
 from oncologia.extensions.models import (
     EntryPoin,
     EntryTeam,
     ExamType,
+    PendencyStatus,
     TumorGroup,
 )
 from oncologia.utils import get_website_agent
@@ -196,3 +203,33 @@ class PatientForm(FlaskForm):
                 for state in states
             ]
         return []
+
+
+class PendencyForm(FlaskForm):
+    type_ad = StringField(
+        "Tipo",
+        validators=[DataRequired(message="O campo é obrigatório")],
+    )
+    date = DateField(
+        "Data",
+        format="%Y-%m-%d",
+        validators=[DataRequired(message="O campo é obrigatório")],
+    )
+    status = SelectField(
+        "Status",
+        validators=[DataRequired()],
+        coerce=int,  # Assegura que o valor é tratado como int
+    )
+    description = TextAreaField(
+        "Descrição", validators=[DataRequired(message="O campo é obrigatório")]
+    )
+
+    def __init__(self, *args, **kwargs):
+        super(PendencyForm, self).__init__(*args, **kwargs)
+        # self.type_ad.choices = [
+        #     (ptype.id, ptype.name) for ptype in PendencyType.query.all()
+        # ]
+        self.status.choices = [
+            (status.value, _translator(status.name))
+            for status in PendencyStatus
+        ]
