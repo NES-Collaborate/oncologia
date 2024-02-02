@@ -91,6 +91,7 @@ class Patient(db.Model):
     cpf: Mapped[str] = mapped_column(nullable=True)
     address: Mapped[str] = mapped_column(nullable=True)
     city: Mapped[str] = mapped_column(nullable=False)
+    cns: Mapped[str] = mapped_column(nullable=True)
     state: Mapped[str] = mapped_column(nullable=False)
     phones: Mapped[List[PhoneNumber]] = relationship(
         PhoneNumber,
@@ -121,11 +122,18 @@ class Patient(db.Model):
         lazy=True,
         order_by=Pendency.due_date.asc(),
     )
-    cns: Mapped[str] = mapped_column(nullable=True)
+    statuses = relationship(
+        "Status",
+        backref="patient",
+        lazy=True,
+        order_by="Status.created_at.desc()",
+    )
 
     def __init__(self, **kwargs):
         for k, v in kwargs.items():
             setattr(self, k, v)
+        if not self.statuses:
+            self.statuses = [Status(type=StatusType.default)]
 
     def to_json(self):
         labels = {
@@ -168,7 +176,7 @@ class TumorCharacterization(db.Model):
     histological_type_primary_tumor: Mapped[Optional[str]] = mapped_column(
         nullable=True,
     )
-    staging: Mapped[Optional[str]] = mapped_column(unique=True, nullable=True)
+    staging: Mapped[Optional[str]] = mapped_column(nullable=True)
     location_distant_metastasis: Mapped[Optional[str]] = mapped_column(
         nullable=True
     )
@@ -295,27 +303,45 @@ class TypeTreatment(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str]
 
+    def __init__(self, name: str):
+        self.name = name
+
+
+class StatusType(enum.Enum):
+    in_treatment_treaties = "Em Tratamento/Tratados"
+    non_melanoma_skin = "Pele Não Melanoma"
+    death = "Óbito"
+    palliative_care = "Cuidado Paliativo"
+    conservative_treatment = "Tratamento Conservador"
+    abandonment_refusal = "Abandono ou Recusa de Tratamento"
+    treatment_unable_treat = "Sem Condições de Tratamento"
+    default = "Aguardando Tratamento"
+
 
 class Status(db.Model):
     __tablename__ = "status"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    ghc_patient: Mapped[int] = mapped_column(ForeignKey("patient.ghc"))
-    type_status: Mapped[str] = mapped_column(nullable=False)
-    date_primary_treatment: Mapped[date]
-    type_treatment_id: Mapped[int] = mapped_column(
+    ghc_patient_ghc: Mapped[int] = mapped_column(ForeignKey("patient.ghc"))
+    type: Mapped[StatusType]
+    created_at: Mapped[datetime] = mapped_column(
+        nullable=False, default=lambda: datetime.now()
+    )
+    date_primary_treatment: Mapped[Optional[date]]
+    type_treatment_id: Mapped[Optional[int]] = mapped_column(
         ForeignKey("type_treatment.id")
     )
-    entry_team_id: Mapped[int] = mapped_column(ForeignKey("entry_team.id"))
-    complement: Mapped[str]
-    time_start_treatment: Mapped[int]
-    time_arrial_treatment: Mapped[int]
-    time_radiotherapy: Mapped[int]
-    date_death: Mapped[date]
-    place_death: Mapped[str]
-    definition_date: Mapped[date]
-    definition_date: Mapped[date]
-    note: Mapped[str]
+    entry_team_id: Mapped[Optional[int]] = mapped_column(
+        ForeignKey("entry_team.id")
+    )
+    complement: Mapped[Optional[str]]
+    time_start_treatment: Mapped[Optional[int]]
+    time_arrial_treatment: Mapped[Optional[int]]
+    time_radiotherapy: Mapped[Optional[int]]
+    date_death: Mapped[Optional[date]]
+    place_death: Mapped[Optional[DiagnosisLocation]]
+    definition_date: Mapped[Optional[date]]
+    note: Mapped[Optional[str]]
 
     type_treatment: Mapped["TypeTreatment"] = relationship(
         "TypeTreatment", backref="statuses", foreign_keys=[type_treatment_id]
@@ -323,6 +349,10 @@ class Status(db.Model):
     entry_team: Mapped["EntryTeam"] = relationship(
         "EntryTeam", backref="statuses", foreign_keys=[entry_team_id]
     )
+
+    def __init__(self, **kwargs):
+        for k, v in kwargs.items():
+            setattr(self, k, v)
 
 
 @app.cli.command("init-db")

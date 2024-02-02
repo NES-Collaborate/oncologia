@@ -1,95 +1,98 @@
 {% macro render(patient) %}
 <div class="card bg-base-200 shadow-xl">
-    <div class="card-body">
-        <h2 class="card-title text-primary text-3xl">
-            <i data-lucide="circle-user" class="w-10 h-10"></i>
-            Perfil do Paciente
-        </h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <h3
-                class="flex items-center gap-2 text-accent text-xl mt-4 col-span-1 md:col-span-2 lg:col-span-3"
-            >
-                <i data-lucide="info"></i>
-                Informações
-            </h3>
-            <p><strong>Nome:</strong> {{ patient.name }}</p>
-            <p><strong>GHC:</strong> {{ patient.ghc }}</p>
-            <p>
-                <strong>Nascimento:</strong> {{ patient.birthday.strftime('%d/%m/%Y') }}
-            </p>
-            <p><strong>Gênero:</strong> {{ patient.gender }}</p>
-            <p><strong>Raça:</strong> {{ patient.race }}</p>
-            <p><strong>CPF:</strong> {{ patient.cpf or 'N/A' }}</p>
-            <p><strong>Endereço:</strong> {{ patient.address or 'N/A' }}</p>
-            <p><strong>Cidade:</strong> {{ patient.city }}</p>
-            <p><strong>Estado:</strong> {{ patient.state }}</p>
-            <p><strong>CNS:</strong> {{ patient.cns or 'N/A' }}</p>
-        </div>
-
-        <h3 class="flex items-center gap-2 text-accent text-xl mt-4">
-            <i data-lucide="book-user"></i>
-            Contatos ({{ patient.phones | length}})
-        </h3>
-        {% for phone in patient.phones %}
-        <p class="flex">
-            {{ phone.number }} (WhatsApp:
-            <span
-                class="tooltip tooltip-right tooltip-primary"
-                data-tip="Este número {{'' if phone.is_wpp else 'não'}} está no WhatsApp"
-            >
-                <i
-                    data-lucide="{{ clsx(['check-circle', phone.is_wpp], ['x-circle', not phone.is_wpp]) }}"
-                    class="{{ clsx(['text-green-500', phone.is_wpp], ['text-red-500', not phone.is_wpp], 'ml-2') }}"
-                ></i> </span
-            >)
-        </p>
-        {% endfor %}
-
-        <h3 class="flex items-center gap-2 text-accent text-xl mt-4">
-            <i data-lucide="stethoscope"></i>
-            Caracterização do Tumor
-        </h3>
-        <p>
-            <strong>Tipo:</strong> {{
-            patient.tumor_characterization.histological_type_primary_tumor }}
-        </p>
-        <p>
-            <strong>Estadiamento (TNM):</strong> {{ patient.tumor_characterization.staging
-            }}
-        </p>
-        <p>
-            <strong>Localização:</strong> {{
-            patient.tumor_characterization.location_distant_metastasis }}
-        </p>
-
-        <h3 class="flex items-center gap-2 text-accent text-xl mt-4">
-            <i data-lucide="activity"></i>
-            Caracterização do Diagnóstico
-        </h3>
-        <p>
-            <strong>Data:</strong> {{
-            patient.diagnosis_characterization.diagnosis_date.strftime('%d/%m/%Y') }}
-        </p>
-        <p>
-            <strong>Localização:</strong> {{
-            translator(patient.diagnosis_characterization.diagnosis_location.name) }}
-        </p>
-
-        <br />
-        <div class="card-actions justify-end">
-            <a href="#" class="btn btn-accent">
-                <i data-lucide="edit"></i>
-                Editar Perfil
-            </a>
-            <a href="{{ url_for('patient.create_pendency', id=patient.ghc) }}" class="btn btn-primary">
-                <i data-lucide="plus"></i>
-                Adicionar Pendência</a
-            >
-            <a href="#" class="btn btn-secondary">
-                <i data-lucide="settings-2"></i>
-                Mudar Status</a
-            >
-        </div>
+  <div class="card-body">
+    <h2 class="card-title text-primary text-3xl">
+      <i data-lucide="circle-user" class="w-10 h-10"></i>
+      Perfil do Paciente
+    </h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <h3
+        class="flex items-center gap-2 text-accent text-xl mt-4 col-span-1 md:col-span-2 lg:col-span-3"
+      >
+        <i data-lucide="info"></i>
+        Informações
+      </h3>
+      <p><strong>Nome:</strong> {{ patient.name }}</p>
+      <p><strong>GHC:</strong> {{ patient.ghc }}</p>
+      <p><strong>Nascimento:</strong> {{ patient.birthday.strftime('%d/%m/%Y') }}</p>
+      <p><strong>Gênero:</strong> {{ patient.gender }}</p>
+      <p><strong>Raça:</strong> {{ patient.race }}</p>
+      <p><strong>CPF:</strong> {{ patient.cpf or 'N/A' }}</p>
+      <p><strong>Endereço:</strong> {{ patient.address or 'N/A' }}</p>
+      <p><strong>Cidade:</strong> {{ patient.city }}</p>
+      <p><strong>Estado:</strong> {{ patient.state }}</p>
+      <p><strong>CNS:</strong> {{ patient.cns or 'N/A' }}</p>
     </div>
+
+    <h3 class="flex items-center gap-2 text-accent text-xl mt-4">
+      <i data-lucide="book-user"></i>
+      Contatos ({{ patient.phones | length}})
+    </h3>
+    {% for phone in patient.phones %}
+    <p class="flex">
+      {{ phone.number }} (WhatsApp:
+      <span
+        class="tooltip tooltip-right tooltip-primary"
+        data-tip="Este número {{'' if phone.is_wpp else 'não'}} está no WhatsApp"
+      >
+        <i
+          data-lucide="{{ clsx(['check-circle', phone.is_wpp], ['x-circle', not phone.is_wpp]) }}"
+          class="{{ clsx(['text-green-500', phone.is_wpp], ['text-red-500', not phone.is_wpp], 'ml-2') }}"
+        ></i> </span
+      >)
+    </p>
+    {% endfor %}
+
+    <h3 class="flex items-center gap-2 text-accent text-xl mt-4">
+      <i data-lucide="stethoscope"></i>
+      Caracterização do Tumor
+    </h3>
+    <p>
+      <strong>Tipo:</strong> {{
+      patient.tumor_characterization.histological_type_primary_tumor }}
+    </p>
+    <p>
+      <strong>Estadiamento (TNM):</strong> {{ patient.tumor_characterization.staging }}
+    </p>
+    <p>
+      <strong>Localização:</strong> {{
+      patient.tumor_characterization.location_distant_metastasis }}
+    </p>
+
+    <h3 class="flex items-center gap-2 text-accent text-xl mt-4">
+      <i data-lucide="activity"></i>
+      Caracterização do Diagnóstico
+    </h3>
+    <p>
+      <strong>Data:</strong> {{
+      patient.diagnosis_characterization.diagnosis_date.strftime('%d/%m/%Y') }}
+    </p>
+    <p>
+      <strong>Localização:</strong> {{
+      translator(patient.diagnosis_characterization.diagnosis_location.name) }}
+    </p>
+
+    <br />
+    <div class="card-actions justify-end">
+      <a href="#" class="btn btn-accent">
+        <i data-lucide="edit"></i>
+        Editar Perfil
+      </a>
+      <a
+        href="{{ url_for('patient.create_pendency', id=patient.ghc) }}"
+        class="btn btn-primary"
+      >
+        <i data-lucide="plus"></i>
+        Adicionar Pendência</a
+      >
+      <a
+        href="{{ url_for('patient.change_status', patient_id=patient.ghc) }}"
+        class="btn btn-secondary"
+      >
+        <i data-lucide="settings-2"></i>
+        Mudar Status</a
+      >
+    </div>
+  </div>
 </div>
 {% endmacro %}

@@ -5,7 +5,7 @@ import requests
 from flask import flash, redirect, session, url_for
 from sqlalchemy import or_
 
-from oncologia.extensions.models import Patient
+from oncologia.extensions.models import Patient, StatusType
 
 
 def login_required(func):
@@ -39,3 +39,25 @@ def search_patient_query(q: Optional[str] = None):
             )
         )
     return query
+
+
+def get_status_type_form(status_type: StatusType):
+    from oncologia.forms import (
+        AbandonmentRefusalTreatmentUnableTreatForm,
+        DeathForm,
+        DefaultStatusForm,
+        InTreatmentTreatiesNonMelanomaSkinForm,
+        PalliatievCareConservativeTreatmentForm,
+    )
+
+    data = {
+        StatusType.in_treatment_treaties: InTreatmentTreatiesNonMelanomaSkinForm,
+        StatusType.non_melanoma_skin: InTreatmentTreatiesNonMelanomaSkinForm,
+        StatusType.death: DeathForm,
+        StatusType.palliative_care: PalliatievCareConservativeTreatmentForm,
+        StatusType.conservative_treatment: PalliatievCareConservativeTreatmentForm,
+        StatusType.abandonment_refusal: AbandonmentRefusalTreatmentUnableTreatForm,
+        StatusType.treatment_unable_treat: AbandonmentRefusalTreatmentUnableTreatForm,
+        StatusType.default: DefaultStatusForm,
+    }
+    return data[status_type]

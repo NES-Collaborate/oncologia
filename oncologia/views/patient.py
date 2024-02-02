@@ -12,11 +12,13 @@ from oncologia.extensions.models import (
     PendencyStatus,
     PendencyType,
     PhoneNumber,
+    Status,
+    StatusType,
     TumorCharacterization,
     TumorGroup,
 )
 from oncologia.forms import PatientForm, PendencyForm
-from oncologia.utils import login_required
+from oncologia.utils import get_status_type_form, login_required
 
 bp = Blueprint("patient", __name__, url_prefix="/patient")
 
@@ -188,4 +190,55 @@ def create():
         render_template("patient/create.html", form=form)
         if not returnerd
         else returnerd
+    )
+
+
+@bp.route("/change-status/<int:patient_id>", methods=["POST", "GET"])
+@login_required
+def change_status(patient_id: int):
+    patient = Patient.query.filter_by(ghc=patient_id).first()
+    if not patient:
+        flash("Paciente com ID especificado não encontrado.", "error")
+        return redirect(url_for("home.index"))
+
+    action = request.args.get("action", "")
+
+    def submit_status():
+        status_type = request.args.get("status_type")
+        if not status_type:
+            flash("Selecione primeiro um tipo de status.", "error")
+            return redirect(
+                url_for("patient.change_status", patient_id=patient_id)
+            )
+
+        try:
+            status_type = StatusType(status_type)
+        except ValueError:
+            flash("Tipo de Status inválido, escolha outro.", "error")
+            return redirect(
+                url_for("patient.change_status", patient_id=patient_id)
+            )
+
+        form = get_status_type_form(status_type)()
+
+        if form.validate_on_submit():
+            new_status = Status(type=status_type, **form.data)
+            patient.statuses.append(new_status)
+            db.session.commit()
+            flash("Status adicionado com sucesso!", "success")
+            return redirect(url_for("patient.profile", id=patient_id))
+
+        return render_template(
+            "patient/change_status.html", patient=patient, form=form
+        )
+
+    func = locals().get(action, lambda: None)
+    returned = func()
+    if returned:
+        return returned
+
+    return render_template(
+        "patient/change_status.html",
+        patient=patient,
+        possible_status=StatusType.__members__.values(),
     )

@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+<!-- Title -->
+{% block title %} {{ 'Selecionar Status' if possible_status else 'Definir Status' }} {%
+endblock%}
+
+<!-- Flash -->
+{% import "components/flash_messages.html" as flash %}
+
+<!-- Content -->
+{% block content %}
+<!--  -->
+{{ flash.show() }}
+<!--  -->
+{% if possible_status %}
+<!--  -->
+<h1 class="text-3xl text-center font-bold mt-8">Selecionar Próximo Status do Paciente</h1>
+<form class="flex flex-col w-3/4 h-96 justify-center space-y-4 mx-auto">
+  <select name="status_type" class="select select-bordered select-primary select-lg">
+    {% for status_type in possible_status %}
+    <option value="{{ status_type.value }}" {{ 'selected' if status_type == patient.statuses[0].type }}>{{ status_type.value }}</option>
+    {% endfor %}
+  </select>
+  <input type="hidden" name="action" value="submit_status" />
+
+  <button type="submit" class="btn btn-primary btn-outline btn-lg">
+    <i data-lucide="clipboard-pen-line"></i>
+    Selecionar
+  </button>
+</form>
+{% else %}
+<h1 class="text-3xl text-center font-bold my-4">Definir Status do Paciente</h1>
+<form class="flex flex-wrap mb-10 space-y-4 mx-auto" method="post">
+  {{ form.hidden_tag() }}
+  <!--  -->
+  {% for field in form if field.widget.input_type != 'hidden' %}
+  <!--  -->
+  {% set is_boolean = field.type == 'BooleanField' %}
+  <!--  -->
+  {% set is_textarea = field.type == 'TextAreaField' %}
+  <!--  -->
+  {% set is_text_input = field.type == 'StringField' %}
+  <!--  -->
+  {% set is_select = field.type == 'SelectField' %}
+  <!--  -->
+  {% set is_required = field.flags.required %}
+  <label
+    class="form-control w-full {{ 'w-1/2' if field.widget.input_type == 'SelectMultipleField' or field.widget.input_type == 'SelectField' }}"
+  >
+    <div class="label flex items-center">
+      <span class="label-text">
+        {{ field.label }}
+        <!--  -->
+        {% if is_required %}
+        <!--  -->
+        <span class="text-error">*</span>
+        <!--  -->
+        {% endif %}
+      </span>
+    </div>
+    {% if field.errors %}
+    <span class="label-text-alt text-error">{{ field.errors[0] }}</span>
+    {% endif %}
+    <div class="{{ 'flex items-center' if is_boolean }}">
+      {{ field(class=clsx(["input input-bordered", is_text_input], ["checkbox checkbox-lg", is_boolean], ["textarea h-56", is_textarea], ["select select-bordered", is_select], ["input input-bordered", not all([is_boolean, is_select, is_text_input, is_textarea])], "w-full")) }}
+    </div>
+  </label>
+  {% endfor %}
+  <div class="w-full flex justify-center">
+    <button class="btn btn-outline btn-primary w-2/5" type="submit">
+      Cadastrar <i data-lucide="plus" class="ml-2"></i>
+    </button>
+  </div>
+</form>
+{% endif %}
+<!--  -->
+{% endblock %}

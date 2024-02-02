@@ -11,11 +11,13 @@ from wtforms.validators import DataRequired
 
 from oncologia.extensions.jija_utils import _translator
 from oncologia.extensions.models import (
+    DiagnosisLocation,
     EntryPoin,
     EntryTeam,
     ExamType,
     PendencyStatus,
     TumorGroup,
+    TypeTreatment,
 )
 from oncologia.utils import get_website_agent
 
@@ -233,3 +235,106 @@ class PendencyForm(FlaskForm):
             (status.value, _translator(status.name))
             for status in PendencyStatus
         ]
+
+
+class InTreatmentTreatiesNonMelanomaSkinForm(FlaskForm):
+    date_primary_treatment = DateField(
+        "Data do Primeiro Tratamento", validators=[DataRequired()]
+    )
+    type_treatment = StringField(
+        "Tipo de Tratamento", validators=[DataRequired()]
+    )
+    entry_team = StringField("Equipe de Entrada", validators=[DataRequired()])
+    complement = StringField("Complemento")
+
+    def __init__(self, *args, **kwargs):
+        super(InTreatmentTreatiesNonMelanomaSkinForm, self).__init__(
+            *args, **kwargs
+        )
+
+    def validate_on_submit(self, extra_validators=None):
+        if super().validate_on_submit(extra_validators):
+            entry_team = EntryTeam.query.filter_by(
+                name=self.entry_team.data
+            ).first()
+            if not entry_team:
+                entry_team = EntryTeam(name=getattr(self.entry_team, "data"))
+            setattr(self.entry_team, "data", entry_team)
+
+            type_treatment = TypeTreatment.query.filter_by(
+                name=self.type_treatment.data
+            ).first()
+            if not type_treatment:
+                type_treatment = TypeTreatment(
+                    name=getattr(self.type_treatment, "data")
+                )
+            setattr(self.type_treatment, "data", type_treatment)
+            return True
+        return False
+
+
+class DeathForm(FlaskForm):
+    date_death = DateField("Data de Óbito", validators=[DataRequired()])
+    place_death = SelectField(
+        "Local da Morte",
+        choices=[(1, "Interno"), (2, "Externo")],
+        validators=[DataRequired()],
+        coerce=int,
+    )
+
+    def __init__(self, *args, **kwargs):
+        super(DeathForm, self).__init__(*args, **kwargs)
+
+    def validate_on_submit(self, extra_validators=None):
+        if super().validate_on_submit(extra_validators):
+            place_death = DiagnosisLocation(self.place_death.data)
+            setattr(self.place_death, "data", place_death)
+            return True
+        return False
+
+
+class PalliatievCareConservativeTreatmentForm(FlaskForm):
+    definition_date = DateField(
+        "Data de Definição", validators=[DataRequired()]
+    )
+    entry_team = StringField(
+        "Equipe de Tratamento", validators=[DataRequired()]
+    )
+
+    def __init__(self, *args, **kwargs):
+        super(PalliatievCareConservativeTreatmentForm, self).__init__(
+            *args, **kwargs
+        )
+
+    def validate_on_submit(self, extra_validators=None):
+        if super().validate_on_submit(extra_validators):
+            entry_team = EntryTeam.query.filter_by(
+                name=self.entry_team.data
+            ).first()
+            if not entry_team:
+                entry_team = EntryTeam(name=getattr(self.entry_team, "data"))
+            setattr(self.entry_team, "data", entry_team)
+            return True
+        return False
+
+
+class AbandonmentRefusalTreatmentUnableTreatForm(FlaskForm):
+    definition_date = DateField(
+        "Data de Definição", validators=[DataRequired()]
+    )
+    note = StringField("Observação")
+
+    def __init__(self, *args, **kwargs):
+        super(AbandonmentRefusalTreatmentUnableTreatForm, self).__init__(
+            *args, **kwargs
+        )
+
+
+class DefaultStatusForm(FlaskForm):
+    message = TextAreaField(
+        "Mensagem",
+        render_kw={
+            "disabled": True,
+            "placeholder": "Este é o Status Padrão! Simplesmente submeta para confirmar.",
+        },
+    )
