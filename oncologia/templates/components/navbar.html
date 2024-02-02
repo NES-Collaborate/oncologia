@@ -1,40 +1,32 @@
 {% macro show() %}
 <div class="navbar glass">
-  <div class="flex-1">
-    <a class="btn btn-ghost text-xl">{{ config.APP_NAME }}</a>
-  </div>
-  <div class="flex-none gap-3 justify-around">
-    <ul class="menu menu-horizontal">
-      <li>
-        <details>
-          <summary>Links</summary>
-          <ul class="p-2 bg-base-200 rounded-t-none">
-            {% with navbar_pages = get_navigation_pages() %}
-              {% for endpoint, name, icon in navbar_pages %}
-                <li>
-                  <a href="{{ url_for(endpoint) }}">
-                    {{ name }}
-                    <i data-lucide="{{ icon }}"></i>
-                  </a>
-                </li>
-              {% endfor %}
-            {% endwith %}
-          </ul>
-        </details>
-      </li>
-    </ul>
+    <div class="flex-1">
+        <a class="btn btn-ghost text-xl">{{ config.APP_NAME }}</a>
+    </div>
+    <div class="flex-none gap-3 justify-around">
+        {% with navbar_pages = get_navigation_pages() %}
+        <!--  -->
+        {% for endpoint, name, icon in navbar_pages %}
+        <a href="{{ url_for(endpoint) }}" class="flex gap-2 btn btn-outline">
+            <i data-lucide="{{ icon }}"></i>
+            {{ name }}
+        </a>
+        {% endfor %}
+        <!--  -->
+        {% endwith %}
+        <!--  -->
+        {% if session.user_id %}
 
-    {% if session.user_id %}
-      <a href="{{ url_for('auth.logout') }}" class="btn btn-accent btn-outline">
-        <i data-lucide="log-out"></i>
-        Sair
-      </a>
-    {% else %}
-      <a href="{{ url_for('auth.login') }}" class="btn btn-accent btn-outline">
-        <i data-lucide="log-in"></i>
-        Login
-      </a>
-    {% endif %}
-  </div>
+        <a href="{{ url_for('auth.logout') }}" class="btn btn-accent btn-outline">
+            <i data-lucide="log-out"></i>
+            Sair
+        </a>
+        {% else %}
+        <a href="{{ url_for('auth.login') }}" class="btn btn-accent btn-outline">
+            <i data-lucide="lock"></i>
+            Login
+        </a>
+        {% endif %}
+    </div>
 </div>
 {% endmacro %}

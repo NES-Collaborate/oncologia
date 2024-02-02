@@ -9,7 +9,6 @@ def __get_nav_pages():
     return [
         ("home.index", "Home", "home"),
         ("home.add_patient", "Adicionar Paciente", "user-plus"),
-        ("auth.login", "Login", "lock"),
     ]
 
 
@@ -32,12 +31,24 @@ def __clsx(*args):
     return " ".join(base)
 
 
+def __translator(text: str):
+    translations = {
+        "extern": "Externo",
+        "intern": "Interno",
+        "pending": "Pendente",
+        "done": "Concluído",
+        "canceled": "Cancelado",
+    }
+    return translations.get(text, text)
+
+
 utils = {
     "get_navigation_pages": __get_nav_pages,
     "today": lambda: datetime.datetime.now().strftime("%d/%m/%Y"),
     "isinstance": isinstance,
     "types": __get_types,
     "clsx": __clsx,
+    "translator": __translator,
 }
 
 
