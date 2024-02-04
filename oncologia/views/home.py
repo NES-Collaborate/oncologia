@@ -24,7 +24,7 @@ def index():
 def search_patient():
     q = request.args.get("q")
     page = request.args.get("p", 1, type=int)
-    per_page = 15
+    per_page = 10
 
     query = search_patient_query(q)
     patients = query.paginate(page=page, per_page=per_page)

@@ -22,6 +22,11 @@
         placeholder="Nome, GHC, CPF, Telefone..."
         value="{{ request.args.get('q', '') }}"
       />
+      <select class="select select-bordered join-item" name="status">
+        <option disabled selected>Status do Paciente</option>
+        <option value="all">Todos</option>
+        <option>Greedo</option>
+      </select>
       <button class="btn btn-primary join-item">
         <div class="tooltip" data-tip="Pesquisar">
           <i data-lucide="search"></i>

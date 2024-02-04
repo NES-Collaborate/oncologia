@@ -15,8 +15,11 @@ from oncologia.extensions.models import (
     ExamType,
     Patient,
     PhoneNumber,
+    Status,
+    StatusType,
     TumorCharacterization,
     TumorGroup,
+    TypeTreatment,
 )
 
 df = pd.read_csv("data/data_oncology.csv")
@@ -60,22 +63,62 @@ def create_fake_data_from_df(df):
             )
 
             new_diagnosis_characterization = DiagnosisCharacterization(
-                primary_date_consult=datetime.strptime(
-                    row["Data Diagnóstico"], "%m/%d/%Y"
-                ).date()
-                if not pd.isna(row["Data Diagnóstico"])
-                else date(2000, 1, 1),
+                primary_date_consult=(
+                    datetime.strptime(
+                        row["Data Entrada GHC"], "%m/%d/%Y"
+                    ).date()
+                    if not pd.isna(row["Data Diagnóstico"])
+                    else date(2000, 1, 1)
+                ),
                 entry_poin=new_entry_poin,
                 entry_team=new_entry_team,
                 diagnosis_exam=new_exam_type,
-                diagnosis_date=datetime.strptime(
-                    row["Data Diagnóstico"], "%m/%d/%Y"
-                ).date()
-                if not pd.isna(row["Data Diagnóstico"])
-                else date(2000, 1, 1),
-                diagnosis_location=DiagnosisLocation.extern
-                if row["Diagnóstico Interno / Externo"] == "Fora"
-                else DiagnosisLocation.intern,
+                diagnosis_date=(
+                    datetime.strptime(
+                        row["Data Diagnóstico"], "%m/%d/%Y"
+                    ).date()
+                    if not pd.isna(row["Data Diagnóstico"])
+                    else date(2000, 1, 1)
+                ),
+                diagnosis_location=(
+                    DiagnosisLocation.extern
+                    if row["Diagnóstico Interno / Externo"] == "Fora"
+                    else DiagnosisLocation.intern
+                ),
+            )
+
+            type_treatment = TypeTreatment.query.filter_by(
+                name=row["Tipo de Procedimento"]
+            ).first()
+            if not type_treatment:
+                type_treatment = TypeTreatment(
+                    row["Tipo de Procedimento"]
+                    if not pd.isna(row["Tipo de Procedimento"])
+                    else "Não Informado"
+                )
+
+            entry_team = EntryTeam.query.filter_by(
+                name=row["Equipe tratamento"]
+            ).first()
+            if not entry_team:
+                entry_team = EntryTeam(
+                    name=(
+                        row["Equipe tratamento"]
+                        if not pd.isna(row["Equipe tratamento"])
+                        else "Não Informado"
+                    )
+                )
+
+            status = Status(
+                date_primary_treatment=(
+                    datetime.strptime(row["Data 1º Tratamento"], "%m/%d/%Y")
+                    if not pd.isna(row["Data 1º Tratamento"])
+                    else date(2000, 2, 2)
+                ),
+                type_treatment=type_treatment,
+                entry_team=entry_team,
+                complement=row["Procedimento"],
+                type=StatusType.in_treatment_treated,
             )
 
             new_patient = Patient(
@@ -91,6 +134,7 @@ def create_fake_data_from_df(df):
                 tumor_characterization=new_tumor_characterization,
                 diagnosis_characterization=new_diagnosis_characterization,
                 cns="12344 (teste)",
+                statuses=[status],
             )
 
             db.session.add(new_patient)
