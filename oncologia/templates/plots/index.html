@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+<!-- Title -->
+{% block title %}Gráficos{% endblock %}
+
+<!-- Content -->
+{% block content %}
+<h1 class="text-3xl text-center font-bold my-2">Gráficos</h1>
+
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+  {% for plot in plots %}
+  <dialog id="modalPlot_{{ loop.index }}" class="modal">
+    <div class="modal-box" id="modalContent_{{ loop.index }}">
+      <div class="skeleton w-full h-32"></div>
+    </div>
+    <form method="dialog" class="modal-backdrop"><button></button></form>
+  </dialog>
+
+  <div class="card card-compact w-full bg-base-100 shadow-xl">
+    <figure id="plot_{{ loop.index }}" onclick="modalPlot_{{ loop.index }}.showModal()">
+      <div class="skeleton w-full h-32"></div>
+    </figure>
+    <div class="card-body">
+      <h2 class="card-title">{{ plot.title }}</h2>
+    </div>
+  </div>
+
+  <script>
+    fetch("{{ url_for(plot.endpoint) }}")
+      .then((res) => res.json())
+      .then((data) => {
+        const figure = document.getElementById("plot_{{ loop.index }}")
+        const modal = document.getElementById("modalContent_{{ loop.index }}")
+        figure.innerHTML = `<img src="${data.content}">`
+        modal.innerHTML = `<img src="${data.content}">`
+        figure.classList.add("bg-white")
+      })
+  </script>
+  {% endfor %}
+</div>
+{% endblock %}

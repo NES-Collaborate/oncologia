@@ -1,8 +1,12 @@
+import io
+from base64 import b64encode
 from functools import wraps
 from typing import Optional
 
 import requests
 from flask import flash, redirect, session, url_for
+from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
+from matplotlib.figure import Figure
 from sqlalchemy import or_
 
 from oncologia.extensions.models import Patient, StatusType
@@ -61,3 +65,18 @@ def get_status_type_form(status_type: StatusType):
         StatusType.default: DefaultStatusForm,
     }
     return data[status_type]
+
+
+def create_separate_figure():
+    fig = Figure()
+    FigureCanvas(fig)
+    return fig
+
+
+def save_figure_to_buffer(fig):
+    buffer = io.BytesIO()
+    fig.savefig(buffer, format="png")
+    buffer.seek(0)
+    return (
+        f'data:image/png;base64,{b64encode(buffer.getvalue()).decode("utf-8")}'
+    )

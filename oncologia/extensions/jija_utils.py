@@ -12,6 +12,7 @@ def _get_nav_pages():
         ("home.index", "Home", "home"),
         ("patient.create", "Adicionar Paciente", "user-plus"),
         ("home.search_patient", "Buscar Pacientes", "search"),
+        ("plots.index", "Graficos", "bar-chart-3"),
     ]
 
 
