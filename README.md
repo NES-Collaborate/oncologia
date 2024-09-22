@@ -24,7 +24,7 @@ Visualize patient data through interactive graphs, providing valuable insights f
 
 This application has been meticulously developed and is continuously maintained by NES students, along with contributions from dedicated collaborators:
 
-- Felipe Adeildo - [@felipe-adeildo](https://github.com/felipe-adeildo)
+- Felipe Adeildo - [@felipeadeildo](https://felipeadeildo.com)
 - Arthur Rabello - [@arthurabello](https://github.com/arthurabello) 
 - Luiz Antônio
 - Other NES collaborators, including Edeilson Costa [@ecaf1]
