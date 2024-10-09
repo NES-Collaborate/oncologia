@@ -163,7 +163,7 @@ class PatientForm(FlaskForm):
         validators=[DataRequired()],
         default="Não Informado",
     )
-    cpf = StringField("CPF")
+    cpf = StringField("CPF", validators=[DataRequired(message="O CPF é obrigatório"), self.cpf_validator]) 
     address = StringField("Endereço")
     city = StringField(
         "Cidade",
@@ -205,6 +205,29 @@ class PatientForm(FlaskForm):
                 for state in states
             ]
         return []
+
+    def __verify_cpf(self):
+        cpf = ''.join(filter(str.isdigit, cpf)) #Elimina caracteres não numéricos
+        if len(cpf) != 11:
+            return False
+
+    def calcular_digito(cpf, peso):
+        soma = sum(int(digit) * peso for digit, peso in zip(cpf, peso))
+        digito = 11 - soma % 11
+        return '0' if digito > 9 else str(digito)
+
+        #dígitos verificadores
+        peso1 = range(10, 1, -1)
+        peso2 = range(11, 2, -1)
+
+        dv1 = calcular_digito(cpf[:9], peso1)
+        dv2 = calcular_digito(cpf[:9] + dv1, peso2)
+
+        return cpf[-2:] == dv1 + dv2
+
+    def __cpf_validator(self, form, field):
+        if not forms.__verify_cpf(field.data):
+            raise ValidationError('CPF inválido')
 
 
 class PendencyForm(FlaskForm):
